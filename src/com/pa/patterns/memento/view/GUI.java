@@ -1,5 +1,6 @@
 package com.pa.patterns.memento.view;
 
+import com.pa.patterns.memento.model.Caretaker;
 import com.pa.patterns.memento.model.Product;
 import com.pa.patterns.memento.model.ShoppingCartController;
 import javafx.application.Application;
@@ -22,6 +23,7 @@ public class GUI extends Application {
     private ShoppingCartController shoppingCartController;
     private ListView<Product> listViewCartContents;
     private ComboBox<Date> comboBoxMemento;
+    private Caretaker caretaker;
 
     public static void main(String[] args) {
         launch(args);
@@ -53,13 +55,15 @@ public class GUI extends Application {
         buttonAddProduct.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                if (textFieldProductName.getText().isBlank() || textFieldPrice.getText().isBlank()) {
+                if (textFieldProductName.getText().isEmpty() || textFieldPrice.getText().isEmpty()) {
                     error("Missing product information.");
                 } else {
                     try {
                         String name = textFieldProductName.getText();
                         double price = Double.parseDouble(textFieldPrice.getText());
                         shoppingCartController.addProduct(name, price);
+                        comboBoxMemento.getItems().clear();
+                        comboBoxMemento.getItems().addAll(shoppingCartController.getDate());
                         updateProductCartList();
                     } catch (NumberFormatException nfe) {
                         error("Invalid price value.");
@@ -82,7 +86,7 @@ public class GUI extends Application {
 
         comboBoxMemento = new ComboBox<>();
         comboBoxMemento.setPromptText("Select a time to restore");
-//        hBoxUndo.getChildren().add(comboBoxMemento);
+        hBoxUndo.getChildren().add(comboBoxMemento);
 
         Button buttonUndo = new Button("Undo");
         hBoxUndo.getChildren().add(buttonUndo);
@@ -95,7 +99,13 @@ public class GUI extends Application {
         buttonUndo.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                // TODO
+                try {
+                    Date date = comboBoxMemento.getValue();
+                    shoppingCartController.undo(date);
+                    updateProductCartList();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
             }
         });
 

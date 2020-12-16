@@ -8,21 +8,26 @@ import java.util.Date;
  */
 public class ShoppingCartController {
     private ShoppingCart cart;
+    private Caretaker caretaker;
 
     public ShoppingCartController() {
         cart = new ShoppingCart();
+        caretaker = new Caretaker(cart);
     }
 
     public void addProduct(String name, double cost) {
+        caretaker.saveState();
         Product p = new Product(name, cost);
         cart.addProduct(p);
     }
 
     public void reset() {
+        caretaker.saveState();
         cart.reset();
     }
 
     public void removeProduct(String name) {
+        caretaker.saveState();
         for (Product p : cart.getProducts())
             if (p.getName().equals(name)) {
                 cart.removeProduct(p);
@@ -31,11 +36,16 @@ public class ShoppingCartController {
         return;
     }
 
-    public void undo() {
+    public void undo(Date date) throws NoMementoException {
+        caretaker.restoreState(date);
     }
 
     public Collection<Product> getProducts() {
         return cart.getProducts();
+    }
+
+    public Collection<Date> getDate() {
+        return caretaker.getDates();
     }
 
     public String showAll() {

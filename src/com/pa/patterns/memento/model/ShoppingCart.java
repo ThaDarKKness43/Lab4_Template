@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @author André Sabino
  */
-public class ShoppingCart {
+public class ShoppingCart implements Originator {
     private List<Product> products;
 
     public ShoppingCart() {
@@ -42,6 +42,16 @@ public class ShoppingCart {
     @Override
     public String toString() {
         return String.valueOf(products);
+    }
+
+    @Override
+    public Memento createMemento() {
+        return new MyMemento(products);
+    }
+
+    @Override
+    public void setMemento(Memento savedState) {
+        products = savedState.getState();
     }
 
     private class MyMemento implements Memento {
